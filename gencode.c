@@ -1,12 +1,5 @@
 #include "gencode.h"
-/*
-
-
-    missing catch error for if() and while() expresssion
-
-    decl should be an assignment to 
-    
-*/
+int typeErrorFlag = 0;
 void genprogram(struct NDECLARATIONS *decl, struct NSTATEMENT_SEQUENCE *state_seq)
 {
     
@@ -105,8 +98,10 @@ void genAssignment(struct NASSIGNMENT *assign)
             case 1:
             {
                 updateInit(assign->str);
+               int lType = getType(assign->str);
                 printf("%s = ", assign->str);
-                genExpression(assign->express);
+                const char *rType = genExpression(assign->express);
+                compareType(lType, rType);
                 printf(";\n");
                 break;
             }
@@ -152,7 +147,7 @@ void genElseClause(struct NELSE_CLAUSE *elseClause)
     genStateSeq(elseClause->state_seq);
     printf("}\n");
 }
-void genExpression(struct NEXPRESSION *expression)
+const char*  genExpression(struct NEXPRESSION *expression)
 {
     struct returnSimple * simple1;
     struct returnSimple * simple2;
@@ -168,14 +163,20 @@ void genExpression(struct NEXPRESSION *expression)
                     {
                         if(simple1->s1->f1->ident != NULL)
                         {
-                            verifyTypeInt(simple1->s1->f1->ident);
+                            if(!typeErrorFlag)
+                            {
+                                typeErrorFlag = verifyTypeInt(simple1->s1->f1->ident);
+                            }
                         }
                     }
                     if(simple1->s1->f2 != NULL)
                     {
                         if(simple1->s1->f2->ident != NULL)
                         {
-                            verifyTypeInt(simple1->s1->f2->ident);
+                            if(!typeErrorFlag)
+                            {
+                                typeErrorFlag = verifyTypeInt(simple1->s1->f2->ident);
+                            }
                         }
                     }
                 }
@@ -185,19 +186,27 @@ void genExpression(struct NEXPRESSION *expression)
                     {
                         if(simple1->s2->f1->ident != NULL)
                         {
-                            verifyTypeInt(simple1->s2->f1->ident);
+                            if(!typeErrorFlag)
+                            {
+                                typeErrorFlag = verifyTypeInt(simple1->s2->f1->ident);
+                            }
                         }
                     }
                     if(simple1->s2->f2 != NULL)
                     {
                         if(simple1->s2->f2->ident != NULL)
                         {
-                            verifyTypeInt(simple1->s2->f2->ident);
+                            if(!typeErrorFlag)
+                            {
+                                verifyTypeInt(simple1->s2->f2->ident);
+                            }
                         }
                     }
                 }
 
             }
+            const char* type = "int";
+            return type;
             break;
         case 2:
         {
@@ -210,14 +219,21 @@ void genExpression(struct NEXPRESSION *expression)
                     {
                         if(simple1->s1->f1->ident != NULL)
                         {
-                            verifyTypeInt(simple1->s1->f1->ident);
+                            if(!typeErrorFlag)
+                            {
+                                typeErrorFlag = verifyTypeInt(simple1->s1->f1->ident);
+                            }
+                            
                         }
                     }
                     if(simple1->s1->f2 != NULL)
                     {
                         if(simple1->s1->f2->ident != NULL)
                         {
-                            verifyTypeInt(simple1->s1->f2->ident);
+                            if(!typeErrorFlag)
+                            {
+                                typeErrorFlag = verifyTypeInt(simple1->s1->f2->ident);
+                            }
                         }
                     }
                 }
@@ -227,14 +243,20 @@ void genExpression(struct NEXPRESSION *expression)
                     {
                         if(simple1->s2->f1->ident != NULL)
                         {
-                            verifyTypeInt(simple1->s2->f1->ident);
+                            if(!typeErrorFlag)
+                            {
+                                typeErrorFlag = verifyTypeInt(simple1->s2->f1->ident);
+                            }
                         }
                     }
                     if(simple1->s2->f2 != NULL)
                     {
                         if(simple1->s2->f2->ident != NULL)
                         {
-                            verifyTypeInt(simple1->s2->f2->ident);
+                            if(!typeErrorFlag)
+                            {
+                                typeErrorFlag = verifyTypeInt(simple1->s2->f2->ident);
+                            }
                         }
                     }
                 }
@@ -246,7 +268,7 @@ void genExpression(struct NEXPRESSION *expression)
             }
             else
             {
-                printf(" %s ", expression->op);
+                printf(" %s ",expression->op);
             }
             simple2 = genSimple(expression->simple_express2);
             if(simple2 != NULL)
@@ -257,14 +279,20 @@ void genExpression(struct NEXPRESSION *expression)
                     {
                         if(simple2->s1->f1->ident != NULL)
                         {
-                            verifyTypeInt(simple2->s1->f1->ident);
+                            if(!typeErrorFlag)
+                            {
+                                typeErrorFlag = verifyTypeInt(simple2->s1->f1->ident);
+                            }
                         }
                     }
                     if(simple2->s1->f2 != NULL)
                     {
                         if(simple2->s1->f2->ident != NULL)
                         {
-                            verifyTypeInt(simple2->s1->f2->ident);
+                            if(!typeErrorFlag)
+                            {
+                                typeErrorFlag = verifyTypeInt(simple2->s1->f2->ident);
+                            }
                         }
                     }
                 }
@@ -274,24 +302,33 @@ void genExpression(struct NEXPRESSION *expression)
                     {
                         if(simple2->s2->f1->ident != NULL)
                         {
-                            verifyTypeInt(simple2->s2->f1->ident);
+                            if(!typeErrorFlag)
+                            {
+                                typeErrorFlag = verifyTypeInt(simple2->s2->f1->ident);
+                            }
                         }
                     }
                     if(simple2->s2->f2 != NULL)
                     {
                         if(simple2->s2->f2->ident != NULL)
                         {
-                            verifyTypeInt(simple2->s2->f2->ident);
+                            if(!typeErrorFlag)
+                            {
+                                typeErrorFlag = verifyTypeInt(simple2->s2->f2->ident);
+                            }
                         }
                     }
                 }
 
             }
+            const char* type = "bool";
+            return type;
             break;
         }
-    }
+        }
+    typeErrorFlag = 0;
 }
-struct returnSimple * genSimple(struct NSIMPLE *simple)
+struct returnSimple* genSimple(struct NSIMPLE *simple)
 {
     returnSimple * s = malloc(sizeof(returnSimple));
     struct returnTerm *term1;
@@ -306,14 +343,20 @@ struct returnSimple * genSimple(struct NSIMPLE *simple)
                 {
                     if(term1->f1->ident != NULL)
                     {
-                        verifyTypeInt(term1->f1->ident);
+                        if(!typeErrorFlag)
+                        {
+                            typeErrorFlag = verifyTypeInt(term1->f1->ident);
+                        }
                     }
                 }
                 if(term1->f2 != NULL)
                 {
                     if(term1->f2->ident != NULL)
                     {
-                        verifyTypeInt(term1->f2->ident);
+                        if(!typeErrorFlag)
+                        {
+                            typeErrorFlag = verifyTypeInt(term1->f2->ident);
+                        }
                     }
                 }
             }
@@ -325,14 +368,20 @@ struct returnSimple * genSimple(struct NSIMPLE *simple)
                 {
                     if(term2->f1->ident != NULL)
                     {
-                        verifyTypeInt(term2->f1->ident);
+                        if(!typeErrorFlag)
+                        {
+                            typeErrorFlag = verifyTypeInt(term2->f1->ident);
+                        }
                     }
                 }
                 if(term2->f2 != NULL)
                 {
                     if(term2->f2->ident != NULL)
                     {
-                        verifyTypeInt(term2->f2->ident);
+                        if(!typeErrorFlag)
+                        {
+                            typeErrorFlag = verifyTypeInt(term2->f2->ident);
+                        }
                     }
                 }
             }
@@ -341,6 +390,7 @@ struct returnSimple * genSimple(struct NSIMPLE *simple)
             return s;
             break;
         case 2:
+        
             term1 = genTerm(simple->term1);
             if(term1 != NULL)
             {
@@ -348,20 +398,27 @@ struct returnSimple * genSimple(struct NSIMPLE *simple)
                 {
                     if(term1->f1->ident != NULL)
                     {
-                        verifyTypeInt(term1->f1->ident);
+                        if(!typeErrorFlag)
+                        {
+                            typeErrorFlag = verifyTypeInt(term1->f1->ident);
+                        }
                     }
                 }
                 if(term1->f2 != NULL)
                 {
                     if(term1->f2->ident != NULL)
-                    {
-                        verifyTypeInt(term1->f2->ident);
+                    {   
+                        if(!typeErrorFlag)
+                        {
+                            typeErrorFlag = verifyTypeInt(term1->f2->ident);
+                        }
                     }
                 }
             }
             s->s1 = term1;
             return s;
             break;
+        
     }
 }
 struct returnTerm* genTerm(struct NTERM *term)
@@ -374,7 +431,10 @@ struct returnTerm* genTerm(struct NTERM *term)
         factor1 = genFactor(term->factor1);
         if(factor1->ident != NULL)
         {
-            verifyTypeInt(factor1->ident);
+            if(!typeErrorFlag)
+            {
+                typeErrorFlag = verifyTypeInt(factor1->ident);
+            }
         }
         if(strcmp(term->op, "div") == 0)
         {
@@ -391,7 +451,10 @@ struct returnTerm* genTerm(struct NTERM *term)
         factor2 = genFactor(term->factor2);
         if(factor2->ident != NULL)
         {
-            verifyTypeInt(factor2->ident);
+            if(!typeErrorFlag)
+            {
+                typeErrorFlag = verifyTypeInt(factor2->ident);
+            }
         }
         s->f1 = factor1;
         s->f2 = factor2;
@@ -402,7 +465,10 @@ struct returnTerm* genTerm(struct NTERM *term)
         factor1 = genFactor(term->factor1);
         if(factor1->ident != NULL)
         {
-            verifyTypeInt(factor1->ident);
+            if(!typeErrorFlag)
+            {
+                typeErrorFlag = verifyTypeInt(factor1->ident);
+            }
         }
         s->f1 = factor1;
         return s;

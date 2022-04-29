@@ -6,7 +6,9 @@
         1) Identifier not declared
         2) Enforce int range
         3) Identifier redeclaration
-        4) Type Constraints
+        4) Type Constraints (in assignments and in expressions)
+
+        TYPE CONSTRAINTS FOR ASSIGNMENT
 */
 struct symbol {
     const char *ident;
@@ -29,8 +31,10 @@ void addEntry(const char* type, const char* ident)
 {
     struct symbol *s;
     s = malloc(sizeof(struct symbol));
+   // strcpy(s->ident,ident);
     s->ident = ident;
     s->type = type;
+    //strcpy(s->type,type);
     s->initial = 'T';
     HASH_ADD_STR(symbols, ident, s);  //ident is key
     
@@ -38,7 +42,7 @@ void addEntry(const char* type, const char* ident)
 int verifyIdent(const char* ident)
 {
     struct symbol *s;
-    HASH_FIND_STR(symbols,ident, s);  /* s: output pointer */
+    HASH_FIND_STR(symbols, ident, s);  /* s: output pointer */
     if(s)
     {
         // ident is present
@@ -68,7 +72,6 @@ int verifyInit(const char* ident)
     else
     {
         printf("//ERROR: %s, has not yet been initialized\n", ident);
-        //return 0;
     }
 }
 int verifyInt(int num)
@@ -88,28 +91,46 @@ int identRedecl(const char* ident)
     HASH_FIND_STR(symbols,ident, s);  /* s: output pointer */
     if(s)
     {
-        // ident is being redeclared
         printf("//Error: Identifier, %s, is being redeclared\n", ident);
-        //return 1;
+        return 1;
     }
     else
     {
-        // ident is not present yet
         return 0;
     }
  }
-void verifyTypeInt(const char* ident)
+int verifyTypeInt(const char* ident)
  {
     struct symbol *s;
     HASH_FIND_STR(symbols,ident, s);
     if(strcmp(s->type, "bool") == 0)
     {
-        printf("ERROR: %s, is not of type int\n", ident);
+        printf("//ERROR: %s, is not of type int\n", ident);
+        return 1;
+    }
+    else
+    {
+        return 0;
     }
  } 
- const char * getType(const char* ident)
+ int getType(const char* ident)
  {
     struct symbol *s;
     HASH_FIND_STR(symbols,ident, s);
-    return s->type;
+    if(strcmp(s->type, "bool") == 0)
+    {
+        printf("//ERROR: %s, is not of type int\n", ident);
+        return 0;
+    }
+    else if(strcmp(s->type, "int") == 0)
+    {
+        return 1;
+    }
+ }
+ void compareType(int lType, const char *rType)
+ {
+    if((lType == 0 && strcmp(rType, "int") == 0) || (lType == 1 && strcmp(rType, "bool") == 0))
+    {
+        printf("//ERROR: Left hand side type, does not match right hand side type, %s",rType);
+    }
  }

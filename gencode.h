@@ -28,8 +28,20 @@ void genIf(struct NIF_STATEMENT *if_state);
 void genWhile(struct NWHILE *while_state);
 void genWriteInt(struct NWRITE_INT *writeInt);
 void genElseClause(struct NELSE_CLAUSE *elseClause);
-void genExpression(struct NEXPRESSION *expression);
+const char* genExpression(struct NEXPRESSION *expression);
 struct returnSimple * genSimple(struct NSIMPLE *simple);
 struct returnTerm * genTerm(struct NTERM *term);
 struct returnFactor* genFactor(struct NFACTOR *factor);
+// for the symbol table functions
+void addEntry(const char* type, const char* ident);
+int identRedecl(const char* ident);
+int verifyIdent(const char* ident);
+void updateInit(const char* ident);
+int verifyInit(const char* ident);
+int verifyInt(int num);
+int verifyTypeInt(const char* ident);
+int getType(const char* ident);
+void compareType(int lType, const char *rType);
+
+void printTable();
 #endif
